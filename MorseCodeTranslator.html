@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Morse Code Translator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+/* ===========================
+   DARK MODE ONLY (Black / Purple / Teal)
+   =========================== */
+:root {
+  --background-color: #0B0F14;   /* Black base */
+  --bg-color: #021935;           /* Black background */
+  --text-color: #b1b5b5;         /* Soft off-white text */
+  --card-background: #111827;    /* Dark slate cards */
+  --card-border: #14B8A6;        /* Teal border */
+  --highlight-color: #9333EA;    /* Purple for focus + buttons */
+  --hint-color: #A78BFA;         /* Lavender hints */
+  --error-color: #F43F5E;        /* Coral-red error */
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(180deg, #0B0F14 0%, #111827 70%, #0B0F14 100%);
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.wrap {
+  max-width: 960px;
+  margin: 200px auto;
+  padding: 0 20px;
+}
+
+.card {
+  background: var(--card-background);
+  border: 2px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 0 100px rgba(35, 212, 201, 0.18);
+  padding: 36px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(17, 75, 95, 0.18);
+}
+
+.row {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.col {
+  flex: 1 1 320px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+textarea {
+  width: 395px;
+  min-height: 70px;
+  font-size: 1rem;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid var(--card-border);
+  background: var(--bg-color);
+  color: var(--text-color);
+  resize: none;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.35);
+}
+
+button {
+  margin-top: 14px;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, var(--highlight-color), var(--card-border));
+  border: 2px solid var(--highlight-color);
+  border-radius: 12px;
+  color: #F9FAFB;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.25);
+}
+
+button:hover {
+  background: linear-gradient(135deg, var(--card-border), var(--highlight-color));
+  border-color: var(--card-border);
+  color: #E0F2F1;
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.3);
+  transform: translateY(-2px);
+}
+
+.hint {
+  color: var(--hint-color);
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.error {
+  color: var(--error-color);
+  font-size: 1rem;
+  margin-top: 8px;
+  font-weight: 600;
+}
+  </style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1 align="center">Morse Code Translator</h1>
+    <div class="row">
+      <div class="col">
+        <h3>Plain Text</h3>
+        <textarea id="plain" placeholder="Hello World"></textarea>
+        <button id="encodeBtn">Encode →</button>
+      </div>
+      <div class="col">
+        <h3>Morse</h3>
+        <textarea id="morse" placeholder=".... . .-.. .-.. --- / .-- --- .-. .-.. -.."></textarea>
+        <button id="decodeBtn">← Decode</button>
+        <div class="hint">Letters separated by space; words by <code>/</code>.</div>
+        <div id="err" class="error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const plain = document.getElementById("plain");
+const morse = document.getElementById("morse");
+const err   = document.getElementById("err");
+
+function post(path, body) {
+  return fetch("http://localhost:8081" + path, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body
+  }).then(async r => {
+    const txt = await r.text();
+    if (!r.ok) throw new Error(txt || r.statusText);
+    return txt;
+  });
+}
+
+document.getElementById("encodeBtn").onclick = async () => {
+  err.textContent = "";
+  try {
+    const res = await post("/encode", plain.value);
+    morse.value = res;
+  } catch (e) {
+    err.textContent = e.message;
+  }
+};
+
+document.getElementById("decodeBtn").onclick = async () => {
+  err.textContent = "";
+  try {
+    const res = await post("/decode", morse.value);
+    plain.value = res;
+  } catch (e) {
+    err.textContent = e.message;
+  }
+};
+</script>
+</body>
+</html>
