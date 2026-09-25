@@ -34,12 +34,14 @@ public class MorseCodeServer {
         DEC.put("/", ' ');
     }
 
-   public static void main(String[] args) throws Exception {
-    int port = 8081; // default
-    if (args.length > 0) {
-        port = Integer.parseInt(args[0]);
-    }
-    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+public static void main(String[] args) throws Exception {
+    int port = Integer.parseInt(
+        System.getenv().getOrDefault("PORT", "8081")
+    );
+
+    HttpServer server = HttpServer.create(
+        new InetSocketAddress("0.0.0.0", port), 0
+    );
     server.createContext("/encode", exchange -> {
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
             handlePreflight(exchange);
@@ -77,7 +79,7 @@ public class MorseCodeServer {
         });
 
         server.setExecutor(null);
-        System.out.println("MorseCodeServer running on http://localhost:" + port + "/");
+        System.out.println("MorseCodeServer running on port " + port);
         server.start();
     }
 
