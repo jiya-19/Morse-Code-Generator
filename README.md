@@ -5,7 +5,7 @@ The project allows you to:
 
 * Convert **plain text → Morse code**
 * Convert **Morse code → plain text**
-* Interact through a minimal web interface (`index.html`)
+* Interact through a minimal web interface (`MorseCodeTranslator.html`)
 * Or use REST endpoints (`/encode`, `/decode`) programmatically
 
 ---
@@ -27,7 +27,7 @@ The project allows you to:
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/your-username/morse-code-translator.git
+   git clone https://github.com/jiya-19/Morse-Code-Generator.git
    cd morse-code-translator
    ```
 
@@ -65,7 +65,7 @@ curl -X POST http://localhost:8081/decode -d ".... . .-.. .-.. --- / .-- --- .-.
 
 ```
 ├── MorseCodeServer.java   # Java backend (API server)
-└── index.html             # Frontend UI
+└── MorseCodeTranslator.html             # Frontend UI
 ```
 
 ---
