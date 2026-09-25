@@ -8,6 +8,8 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class MorseCodeServer {
 
@@ -77,7 +79,29 @@ public static void main(String[] args) throws Exception {
             }
             sendText(exchange, 200, result);
         });
+        server.createContext("/", exchange -> {
+    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        sendText(exchange, 405, "Method Not Allowed");
+        return;
+    }
 
+    try {
+        byte[] data = Files.readAllBytes(
+            Path.of("MorseCodeTranslator.html")
+        );
+
+        Headers h = exchange.getResponseHeaders();
+        h.add("Content-Type", "text/html; charset=utf-8");
+
+        exchange.sendResponseHeaders(200, data.length);
+
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(data);
+        }
+    } catch (IOException e) {
+        sendText(exchange, 500, "Server Error");
+    }
+});
         server.setExecutor(null);
         System.out.println("MorseCodeServer running on port " + port);
         server.start();
