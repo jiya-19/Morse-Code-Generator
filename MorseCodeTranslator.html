@@ -147,7 +147,7 @@ const morse = document.getElementById("morse");
 const err   = document.getElementById("err");
 
 function post(path, body) {
-  return fetch("http://localhost:8081" + path, {
+  return fetch(path, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body
